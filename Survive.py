@@ -14,14 +14,26 @@ def scaneou(dado):
 	print("Leituras:")
 	Distancias = np.array(dado.ranges).round(decimals=2)
 	#print(Distancias[315])
-	for distancia in Distancias[300:]: #define visão de 300 a 360 graus
+	for distancia in Distancias[300:]:
 
-		if distancia < 0.5 and distancia != 0.0: #distancia de 0,5 metro e filtra os dados infalidos
+		if distancia < 0.5 and distancia != 0.0:
 			print(distancia)
 
-			velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 3))  #velocidade angular
+			velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 3))
 		else: 
-			velocidade = Twist(Vector3(0.2, 0.2, 0.2), Vector3(0, 0, 0)) #anda pra frente devagar
+			velocidade = Twist(Vector3(0.2, 0.2, 0.2), Vector3(0, 0, 0))
+
+		velocidade_saida.publish(velocidade)
+
+
+	for distancia in Distancias[:60]:
+
+		if distancia < 0.5 and distancia != 0.0:
+			print(distancia)
+
+			velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, -3))
+		#else: 
+		#	velocidade = Twist(Vector3(0.2, 0.2, 0.2), Vector3(0, 0, 0))
 
 		velocidade_saida.publish(velocidade)
 	#print("Intensities")
@@ -41,4 +53,6 @@ if __name__=="__main__":
 		print("Oeee")
 		
 		rospy.sleep(2)
+
+
 
