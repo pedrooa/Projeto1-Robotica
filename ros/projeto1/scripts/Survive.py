@@ -10,14 +10,14 @@ from sensor_msgs.msg import LaserScan
 
 
 def scaneou(dado):
-	print("Faixa valida: ", dado.range_min , " - ", dado.range_max )
-	print("Leituras:")
+	#print("Faixa valida: ", dado.range_min , " - ", dado.range_max )
+	#print("Leituras:")
 	Distancias = np.array(dado.ranges).round(decimals=2)
-	print(Distancias[360])
 	for distancia in Distancias[300:]:
 
 		if distancia < 0.5 and distancia != 0.0:
-			print(distancia)
+			print("girando esquerda")
+			print(min(Distancias))
 
 			velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 3))
 		else: 
@@ -29,7 +29,8 @@ def scaneou(dado):
 	for distancia in Distancias[:60]:
 
 		if distancia < 0.5 and distancia != 0.0:
-			print(distancia)
+			print("girando direita")
+			print(min(Distancias))
 
 			velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, -3))
 		#else: 
