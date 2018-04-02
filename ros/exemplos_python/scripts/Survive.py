@@ -13,7 +13,7 @@ def scaneou(dado):
 	print("Faixa valida: ", dado.range_min , " - ", dado.range_max )
 	print("Leituras:")
 	Distancias = np.array(dado.ranges).round(decimals=2)
-	#print(Distancias[315])
+	print(Distancias[360])
 	for distancia in Distancias[300:]:
 
 		if distancia < 0.5 and distancia != 0.0:
@@ -53,6 +53,9 @@ if __name__=="__main__":
 		print("Oeee")
 		
 		rospy.sleep(2)
+
+
+
 
 
 
