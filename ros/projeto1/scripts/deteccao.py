@@ -94,11 +94,12 @@ def detecta_imagem(frame):
 		cv2.polylines(bordas_color,[np.int32(queryBorder)],True,(0,255,0),5)
 	else:
 		media = (0,0)
+		tamanho = 0
 		print "Raposa nao encontrada- %d/%d"%(len(goodMatch),MIN_MATCH_COUNT)
 
 	print('funcionando')
 	centro = (frame.shape[0]//2, frame.shape[1]//2)
-	return media, centro, achou
+	return media, centro, achou, tamanho
 
 
 def roda_todo_frame(imagem):

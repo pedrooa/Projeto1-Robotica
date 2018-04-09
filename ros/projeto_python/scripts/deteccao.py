@@ -16,10 +16,10 @@ from cv_bridge import CvBridge, CvBridgeError
 bridge = CvBridge()
 
 cv_image = None
-media = []
-centro = []
+media_madfox = []
+centro_madfox = []
 atraso = 1.5
-achou = 0
+achou_madfox = 0
 
 check_delay = False # Só usar se os relógios ROS da Raspberry e do Linux desktop estiverem sincronizados
 
@@ -38,7 +38,7 @@ trainKP,trainDesc = sift.detectAndCompute(img1,None)
 
 
 def detecta_imagem(frame):
-	achou = 0
+	achou_madfox = 0
 
 ######## algoritmo de deteccao da imagem (copiada do projeto madfox)
 
@@ -53,7 +53,7 @@ def detecta_imagem(frame):
 			goodMatch.append(m)
 	MIN_MATCH_COUNT = 30
 	if len(goodMatch) > MIN_MATCH_COUNT:
-		achou = 1
+		achou_madfox = 1
 
 		tp = []
 		qp = []
@@ -75,38 +75,39 @@ def detecta_imagem(frame):
 		y1 = (queryBorder[0][1][1])
 		y2 = (queryBorder[0][2][1])
 		y3 = (queryBorder[0][3][1])
-		media_x = (x0+x1+x2+x3)/4.0
-		media_y = (y0+y1+y2+y3)/4.0
+		media_madfox_x = (x0+x1+x2+x3)/4.0
+		media_madfox_y = (y0+y1+y2+y3)/4.0
 
-		media = (media_x, media_y)   # probelma no y centro centro da imagem detectada
+		media_madfox = (media_madfox_x, media_madfox_y)   # probelma no y centro_madfox centro_madfox da imagem detectada
 
-		centro = (frame.shape[1]//2, frame.shape[0]//2)  # centro da webcam
+		centro_madfox = (frame.shape[1]//2, frame.shape[0]//2)  # centro_madfox da webcam
 
-		dif_x = media[0]-centro[0]
-		dif_y = media[1]-centro[1]
+		dif_x = media_madfox[0]-centro_madfox[0]
+		dif_y = media_madfox[1]-centro_madfox[1]
 
-		##tamanho da imagem
+		##madfox_tamanho da imagem
 		tx = x3 - x0
 		ty = y1 - y0
-		tamanho = (tx*ty)
+		madfox_tamanho = (tx*ty)
 
 
 		cv2.polylines(bordas_color,[np.int32(queryBorder)],True,(0,255,0),5)
 	else:
-		media = (0,0)
+		media_madfox = (0,0)
 		print "Raposa nao encontrada- %d/%d"%(len(goodMatch),MIN_MATCH_COUNT)
+		madfox_tamanho = 0
 
 	print('funcionando')
-	centro = (frame.shape[0]//2, frame.shape[1]//2)
-	return media, centro, achou
+	centro_madfox = (frame.shape[0]//2, frame.shape[1]//2)
+	return media_madfox, centro_madfox, achou_madfox, madfox_tamanho
 
 
 def roda_todo_frame(imagem):
 	print("teste")
 	global cv_image
-	global achou
-	global media
-	global centro
+	global achou_madfox
+	global media_madfox
+	global centro_madfox
 
 	now = rospy.get_rostime()
 	imgtime = imagem.header.stamp
@@ -117,7 +118,7 @@ def roda_todo_frame(imagem):
 	try:
 		antes = time.clock()
 		cv_image = bridge.compressed_imgmsg_to_cv2(imagem, "bgr8")
-		media, centro, achou = detecta_imagem(cv_image)
+		media_madfox, centro_madfox, achou_madfox = detecta_imagem(cv_image)
 		depois = time.clock()
 		cv2.imshow("Camera", cv_image)
 	except CvBridgeError as e:
@@ -142,9 +143,9 @@ if __name__=="__main__":
 		while not rospy.is_shutdown():
 			vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
 
-			if len(media) != 0 and len(centro) != 0 and achou == 1:
-				dif_x = media[0]-centro[0]
-				dif_y = media[1]-centro[1]
+			if len(media_madfox) != 0 and len(centro_madfox) != 0 and achou_madfox == 1:
+				dif_x = media_madfox[0]-centro_madfox[0]
+				dif_y = media_madfox[1]-centro_madfox[1]
 				if dif_x < 0: # Vira a esquerda
 					vel = Twist(Vector3(0,0,0), Vector3(0,0,-5))
 					time.sleep(0.7)
@@ -153,10 +154,11 @@ if __name__=="__main__":
 					vel = Twist(Vector3(0,0,0), Vector3(0,0,5))
 					time.sleep(0.7)
 			else: 
-				print('nao achou')
+				print('nao achou_madfox')
 				vel = Twist(Vector3(0.01,0,0), Vector3(0,0,0))
 			velocidade_saida.publish(vel)
 			rospy.sleep(0.01)
 
 	except rospy.ROSInterruptException:
 	    print("Ocorreu uma exceção com o rospy")
+
