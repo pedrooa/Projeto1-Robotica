@@ -37,14 +37,17 @@ def leu_imu(dado):
 	print(media)
 
 	if colisao == False:
-		if media < -0.8:
+		velocidade = Twist(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0))
+		if media < -1.2:
 			print('bateus')
 			tempo = dado.header.stamp
 			colisao = True
-
+			
 	if colisao == True :
 		if (tempo2-tempo) < 30*delta :
-			velocidade = Twist(Vector3(-0.05, -0.05, -0.05), Vector3(-0, -0, -0.2))
+			print(tempo2-tempo)
+			print(30*delta)
+			velocidade = Twist(Vector3(0.05, 0.05, 0.05), Vector3(0, 0, 0.2))
 			velocidade_saida.publish(velocidade)
 		else:
 			colisao = False
@@ -84,5 +87,5 @@ if __name__=="__main__":
 		print("Main loop")
 		rospy.sleep(2)
 		
-		velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, -3))
+		velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 3))
 

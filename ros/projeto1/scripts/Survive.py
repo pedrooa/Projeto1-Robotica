@@ -19,9 +19,9 @@ def scaneou(dado):
 			print("girando esquerda")
 			print(min(Distancias))
 
-			velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 3))
+			velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, -3))
 		else: 
-			velocidade = Twist(Vector3(0.2, 0.2, 0.2), Vector3(0, 0, 0))
+			velocidade = Twist(Vector3(-0.2, -0.2, -0.2), Vector3(0, 0, 0))
 
 		velocidade_saida.publish(velocidade)
 
