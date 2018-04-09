@@ -129,6 +129,23 @@ if __name__=="__main__":
 
 		while not rospy.is_shutdown():
 			vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
+
+'''
+############## testar abaixo
+			while len(media) != 0 and len(centro) != 0:
+				dif_x = media[0]-centro[0]
+				dif_y = media[1]-centro[1]
+				while dif_x > 0: # Vira a esquerda
+					vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.2))
+					dif_x = media[0]-centro[0]
+				while dif_x < 0: # Vira a direita
+					vel = Twist(Vector3(0,0,0), Vector3(0,0,0.2))
+			velocidade_saida.publish(vel)
+			rospy.sleep(0.01)
+'''
+
+			#################
+
 			if len(media) != 0 and len(centro) != 0:
 				dif_x = media[0]-centro[0]
 				dif_y = media[1]-centro[1]
