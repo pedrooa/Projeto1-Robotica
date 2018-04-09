@@ -48,6 +48,8 @@ def recebe_imagem(imagem):
 
 
 def recebe_laser(dado):
+	global distancias
+	Distancias = np.array(dado.ranges).round(decimals=2)
 
 
 class Rest(smach.State):
@@ -68,6 +70,7 @@ class Sobrevive(smach.State):
 
     def execute(self, userdata):
     	if 'Laser achou obstaculo':
+    		
     		return 'AchouObstaculo'
 		elif madfox_tamanho > objeto_tamanho:
 			return 'AchouMadfox'
@@ -112,8 +115,8 @@ def main():
 
 	# Para usar a webcam 
 	#recebedor = rospy.Subscriber("/cv_camera/image_raw/compressed", CompressedImage, roda_todo_frame, queue_size=1, buff_size = 2**24)
-	recebedor_imagem = rospy.Subscriber("/raspicam_node/image/compressed", CompressedImage, recebedor_imagem, queue_size=10, buff_size = 2**24)
-	recebe_scan = rospy.Subscriber("/scan", recebe_laser, scaneou)
+	recebedor_imagem = rospy.Subscriber("/raspicam_node/image/compressed", CompressedImage, recebe_imagem, queue_size=10, buff_size = 2**24)
+	recebe_scan = rospy.Subscriber("/scan", LaserScan, recebe_laser)
 
 	velocidade_saida = rospy.Publisher("/cmd_vel", Twist, queue_size = 1)
 
