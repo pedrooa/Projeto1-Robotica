@@ -22,6 +22,7 @@ import deteccao
 import Fugir
 import Seguir
 import Gira
+import cor
 
 atraso_maximo = 1.5
 check_delay = False # configure as needed
@@ -58,8 +59,8 @@ def recebe_imagem(imagem):
 	try:
 		# antes = time.clock()
 		cv_image = bridge.compressed_imgmsg_to_cv2(imagem, "bgr8")
-  		media_madfox, centro_madfox, achou_madfox, madfox_tamanho = detecta_imagem(cv_image)
-  		media_objeto, centro_objeto, achou_objeto, objeto_tamanho = identifica_cor(cv_image)
+  		media_madfox, centro_madfox, achou_madfox, madfox_tamanho = deteccao.detecta_imagem(cv_image)
+  		media_objeto, centro_objeto, objeto_tamanho = cor.identifica_cor(cv_image)
   		#media, centro, area = cormodule.identifica_cor(cv_image)
 		# depois = time.clock()
 		cv2.imshow("Camera", cv_image)

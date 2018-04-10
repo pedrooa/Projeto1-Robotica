@@ -19,6 +19,10 @@ from sensor_msgs.msg import Image
 from std_msgs.msg import Header
 import Survive
 import deteccao
+import Fugir
+import Seguir
+import Gira
+import cor
 
 atraso_maximo = 1.5
 check_delay = False # configure as needed
@@ -30,7 +34,7 @@ flannParam = dict(algorithm=FLANN_INDEX_KDITREE,tree=5)
 flann = cv2.FlannBasedMatcher(flannParam,{})
 
 img1 = cv2.imread("/home/borg/catkin_ws/src/Projeto1-Robotica/ros/projeto1/scripts/madfox.jpg",0)
-time.sleep(6)
+time.sleep(4)
 trainKP,trainDesc = sift.detectAndCompute(img1,None)
 
 
@@ -55,8 +59,8 @@ def recebe_imagem(imagem):
 	try:
 		# antes = time.clock()
 		cv_image = bridge.compressed_imgmsg_to_cv2(imagem, "bgr8")
-  		media_madfox, centro_madfox, achou_madfox, madfox_tamanho = detecta_imagem(cv_image)
-  		media_objeto, centro_objeto, achou_objeto, objeto_tamanho = identifica_cor(cv_image)
+  		media_madfox, centro_madfox, achou_madfox, madfox_tamanho = deteccao.detecta_imagem(cv_image)
+  		media_objeto, centro_objeto, objeto_tamanho = cor.identifica_cor(cv_image)
   		#media, centro, area = cormodule.identifica_cor(cv_image)
 		# depois = time.clock()
 		cv2.imshow("Camera", cv_image)
@@ -65,7 +69,7 @@ def recebe_imagem(imagem):
 
 
 def recebe_laser(dado):
-	global distancias
+	global Distancias
 	Distancias = np.array(dado.ranges).round(decimals=2)
 	for distancia in Distancias[300:]:
 		if distancia < 0.5 and distancia != 0.0:
@@ -84,6 +88,7 @@ class Rest(smach.State):
 		elif objeto_tamanho > madfox_tamanho:
 			return 'AchouObjeto'
 		else:
+			Gira.gira()
 			return 'NaoAchou'
 
 class Sobrevive(smach.State):
@@ -112,6 +117,7 @@ class Seguir(smach.State):
 		elif madfox_tamanho > objeto_tamanho:
 			return 'AchouMadfox'
 		elif objeto_tamanho > madfox_tamanho:
+			Seguir.segue()
 			return 'AchouObjeto'
 		else:
 			return 'NaoAchou'
@@ -124,7 +130,7 @@ class Fugir(smach.State):
 		if achou_obstaculo:
     		return 'AchouObstaculo'
 		elif madfox_tamanho > objeto_tamanho:
-			deteccao.foge()
+			Fugir.foge()
 			return 'AchouMadfox'
 		elif objeto_tamanho > madfox_tamanho:
 			return 'AchouObjeto'
