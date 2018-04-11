@@ -41,16 +41,16 @@ def scaneou(dado):
 	#print(np.array(dado.intensities).round(decimals=2))
 
 
-def sobrevive():
+def sobrevive(Distancias, velocidade_saida):
 	for distancia in Distancias[300:]:
 
 		if distancia < 0.5 and distancia != 0.0:
 			print("girando esquerda")
 			print(min(Distancias))
 
-			velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, -3))
+			velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 3))
 		else: 
-			velocidade = Twist(Vector3(-0.2, -0.2, -0.2), Vector3(0, 0, 0))
+			velocidade = Twist(Vector3(0.2, 0.2, 0.2), Vector3(0, 0, 0))
 
 		velocidade_saida.publish(velocidade)
 
@@ -61,9 +61,9 @@ def sobrevive():
 			print("girando direita")
 			print(min(Distancias))
 
-			velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, -3))
-		#else: 
-		#	velocidade = Twist(Vector3(0.2, 0.2, 0.2), Vector3(0, 0, 0))
+			velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 3))
+		# else: 
+		# 	velocidade = Twist(Vector3(-0.2, -0.2, -0.2), Vector3(0, 0, 0))
 
 		velocidade_saida.publish(velocidade)
 	#print("Intensities")

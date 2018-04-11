@@ -20,9 +20,9 @@ bridge = CvBridge()
 cv_image = None
 media_objeto = []
 centro_objeto = []
-atraso = 1.5
+atraso = 0.4E9
 
-check_delay = False # Só usar se os relógios ROS da Raspberry e do Linux desktop estiverem sincronizados
+check_delay = True # Só usar se os relógios ROS da Raspberry e do Linux desktop estiverem sincronizados
 
 def identifica_cor(frame):
 	'''

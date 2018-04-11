@@ -18,10 +18,10 @@ bridge = CvBridge()
 cv_image = None
 media_madfox = []
 centro_madfox = []
-atraso = 1.5
+atraso = 1.1E9
 achou_madfox = 0
 
-check_delay = False # Só usar se os relógios ROS da Raspberry e do Linux desktop estiverem sincronizados
+check_delay = True # Só usar se os relógios ROS da Raspberry e do Linux desktop estiverem sincronizados
 
 
 # configuracao da imagem detectada
@@ -31,7 +31,7 @@ flannParam = dict(algorithm=FLANN_INDEX_KDITREE,tree=5)
 flann = cv2.FlannBasedMatcher(flannParam,{})
 
 img1 = cv2.imread("/home/borg/catkin_ws/src/Projeto1-Robotica/ros/projeto1/scripts/madfox.jpg",0)
-time.sleep(6)
+#time.sleep(3)
 trainKP,trainDesc = sift.detectAndCompute(img1,None)
 
 
