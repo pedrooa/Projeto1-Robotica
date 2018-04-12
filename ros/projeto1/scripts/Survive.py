@@ -15,24 +15,24 @@ def scaneou(dado):
 	Distancias = np.array(dado.ranges).round(decimals=2)
 	for distancia in Distancias[300:]:
 
-		if distancia < 0.5 and distancia != 0.0:
+		if distancia < 0.5 and distancia > 0.1:
 			print("girando esquerda")
 			print(min(Distancias))
 
 			velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, -3))
 		else: 
-			velocidade = Twist(Vector3(-0.2, -0.2, -0.2), Vector3(0, 0, 0))
+			velocidade = Twist(Vector3(0.2, 0.2, 0.2), Vector3(0, 0, 0))
 
 		velocidade_saida.publish(velocidade)
 
 
 	for distancia in Distancias[:60]:
 
-		if distancia < 0.5 and distancia != 0.0:
+		if distancia < 0.5 and distancia > 0.1:
 			print("girando direita")
 			print(min(Distancias))
 
-			velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, -3))
+			velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 3))
 		#else: 
 		#	velocidade = Twist(Vector3(0.2, 0.2, 0.2), Vector3(0, 0, 0))
 
@@ -42,22 +42,24 @@ def scaneou(dado):
 
 
 def sobrevive(Distancias, velocidade_saida):
+	print("TESTE")
+	velocidade = Twist(Vector3(0.2, 0.2, 0.2), Vector3(0, 0, 0))
 	for distancia in Distancias[300:]:
 
-		if distancia < 0.5 and distancia != 0.0:
+		if distancia < 0.3 and distancia > 0.1:
 			print("girando esquerda")
 			print(min(Distancias))
 
-			velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 3))
-		else: 
-			velocidade = Twist(Vector3(0.2, 0.2, 0.2), Vector3(0, 0, 0))
+			velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, -3))
+		
 
+		
 		velocidade_saida.publish(velocidade)
 
 
 	for distancia in Distancias[:60]:
 
-		if distancia < 0.5 and distancia != 0.0:
+		if distancia < 0.3 and distancia > 0.1:
 			print("girando direita")
 			print(min(Distancias))
 
@@ -65,7 +67,7 @@ def sobrevive(Distancias, velocidade_saida):
 		# else: 
 		# 	velocidade = Twist(Vector3(-0.2, -0.2, -0.2), Vector3(0, 0, 0))
 
-		velocidade_saida.publish(velocidade)
+			velocidade_saida.publish(velocidade)
 	#print("Intensities")
 	#print(np.array(dado.intensities).round(decimals=2))
 

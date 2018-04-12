@@ -28,7 +28,7 @@ from cv_bridge import CvBridge, CvBridgeError
 
 bridge = CvBridge()
 
-atraso = 1.1E9
+atraso = 0.4E9
 check_delay = True # configure as needed
 madfox_tamanho = 0
 objeto_tamanho = 0
@@ -78,13 +78,20 @@ def recebe_imagem(imagem):
 
 def recebe_laser(dado):
 	global Distancias
+	global achou_obstaculo
 	print("chegoulaser")
 	Distancias = np.array(dado.ranges).round(decimals=2)
 	for distancia in Distancias[300:]:
-		if distancia < 0.4 and distancia > 0.1:
+		if distancia < 0.3 and distancia > 0.1:
+			print(distancia)
 			achou_obstaculo = True
+			print(achou_obstaculo)
+			rospy.sleep(0.001)
 		else:
+			print("nao achou")
 			achou_obstaculo = False
+			rospy.sleep(0.001)
+
 
 
 class Rest(smach.State):
@@ -93,11 +100,11 @@ class Rest(smach.State):
 
 	def execute(self, userdata):
 		print(madfox_tamanho, objeto_tamanho)
-		if achou_obstaculo:
+		if achou_obstaculo == True:
 			print("achouobstaculo")
 			sobrevive(Distancias, velocidade_saida)
 			return 'AchouObstaculo'
-		if madfox_tamanho > objeto_tamanho:
+		elif madfox_tamanho > objeto_tamanho:
 			return 'AchouMadfox'
 		elif objeto_tamanho > madfox_tamanho:
 			return 'AchouObjeto'
@@ -110,7 +117,7 @@ class Sobrevive(smach.State):
 		smach.State.__init__(self, outcomes=['AchouMadfox', 'AchouObjeto','AchouObstaculo','NaoAchou'])
 
 	def execute(self, userdata):
-		if achou_obstaculo:
+		if achou_obstaculo == True:
 			sobrevive(Distancias, velocidade_saida)
 			return 'AchouObstaculo'
 		elif madfox_tamanho > objeto_tamanho:
@@ -126,7 +133,7 @@ class Seguir(smach.State):
 		smach.State.__init__(self, outcomes=['AchouMadfox', 'AchouObjeto','AchouObstaculo','NaoAchou'])
 
 	def execute(self, userdata):
-		if achou_obstaculo:
+		if achou_obstaculo == True:
 			return 'AchouObstaculo'
 		elif madfox_tamanho > objeto_tamanho:
 			return 'AchouMadfox'
@@ -141,7 +148,7 @@ class Fugir(smach.State):
 		smach.State.__init__(self, outcomes=['AchouMadfox', 'AchouObjeto','AchouObstaculo','NaoAchou'])
 
 	def execute(self, userdata):
-		if achou_obstaculo:
+		if achou_obstaculo == True:
 			return 'AchouObstaculo'
 		elif madfox_tamanho > objeto_tamanho:
 			foge(velocidade_saida, media_madfox, centro_madfox, achou_madfox)
@@ -158,8 +165,9 @@ def main():
 
 	# Para usar a webcam 
 	#recebedor = rospy.Subscriber("/cv_camera/image_raw/compressed", CompressedImage, roda_todo_frame, queue_size=1, buff_size = 2**24)
-	recebedor_imagem = rospy.Subscriber("/raspicam_node/image/compressed", CompressedImage, recebe_imagem, queue_size=10, buff_size = 2**24)
 	recebe_scan = rospy.Subscriber("/scan", LaserScan, recebe_laser)
+	recebedor_imagem = rospy.Subscriber("/raspicam_node/image/compressed", CompressedImage, recebe_imagem, queue_size=10, buff_size = 2**24)
+	
 
 	velocidade_saida = rospy.Publisher("/cmd_vel", Twist, queue_size = 1)
 

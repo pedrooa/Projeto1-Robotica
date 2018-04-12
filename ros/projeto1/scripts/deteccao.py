@@ -18,7 +18,7 @@ bridge = CvBridge()
 cv_image = None
 media_madfox = []
 centro_madfox = []
-atraso = 1.1E9
+atraso = 0.4E9
 achou_madfox = 0
 
 check_delay = True # Só usar se os relógios ROS da Raspberry e do Linux desktop estiverem sincronizados
@@ -97,7 +97,7 @@ def detecta_imagem(frame):
 		print "Raposa nao encontrada- %d/%d"%(len(goodMatch),MIN_MATCH_COUNT)
 		madfox_tamanho = 0
 
-	print('funcionando')
+	
 	centro_madfox = (frame.shape[0]//2, frame.shape[1]//2)
 	return media_madfox, centro_madfox, achou_madfox, madfox_tamanho
 
