@@ -33,6 +33,8 @@ check_delay = True # configure as needed
 madfox_tamanho = 0
 objeto_tamanho = 0
 achou_obstaculo = False
+velocidadenula = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0))
+
 
 # configuracao da imagem detectada
 sift = cv2.xfeatures2d.SIFT_create()
@@ -86,11 +88,12 @@ def recebe_laser(dado):
 			print(distancia)
 			achou_obstaculo = True
 			print(achou_obstaculo)
-			rospy.sleep(0.001)
+			print("achou obstaculo")
+			rospy.sleep(0.01)
 		else:
-			print("nao achou")
+			print("nao_obstaculo")
 			achou_obstaculo = False
-			rospy.sleep(0.001)
+			rospy.sleep(0.01)
 
 
 
@@ -99,7 +102,7 @@ class Rest(smach.State):
 		smach.State.__init__(self, outcomes=['AchouMadfox', 'AchouObjeto', 'AchouObstaculo','NaoAchou'])
 
 	def execute(self, userdata):
-		print(madfox_tamanho, objeto_tamanho)
+		velocidade_saida.publish(velocidadenula)
 		if achou_obstaculo == True:
 			print("achouobstaculo")
 			sobrevive(Distancias, velocidade_saida)
@@ -118,7 +121,8 @@ class Sobrevive(smach.State):
 
 	def execute(self, userdata):
 		if achou_obstaculo == True:
-			sobrevive(Distancias, velocidade_saida)
+			velocidade_saida.publish(Twist(Vector3(0, 0, 0), Vector3(0, 0, -3)))
+			#sobrevive(Distancias, velocidade_saida)
 			return 'AchouObstaculo'
 		elif madfox_tamanho > objeto_tamanho:
 			return 'AchouMadfox'

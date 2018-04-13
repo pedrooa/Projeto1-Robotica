@@ -103,11 +103,12 @@ def detecta_imagem(frame):
 
 
 def roda_todo_frame(imagem):
-	print("teste")
+
 	global cv_image
 	global achou_madfox
 	global media_madfox
 	global centro_madfox
+	global madfox_tamanho
 
 	now = rospy.get_rostime()
 	imgtime = imagem.header.stamp
@@ -118,7 +119,7 @@ def roda_todo_frame(imagem):
 	try:
 		antes = time.clock()
 		cv_image = bridge.compressed_imgmsg_to_cv2(imagem, "bgr8")
-		media_madfox, centro_madfox, achou_madfox = detecta_imagem(cv_image)
+		media_madfox, centro_madfox, achou_madfox, madfox_tamanho = detecta_imagem(cv_image)
 		depois = time.clock()
 		cv2.imshow("Camera", cv_image)
 	except CvBridgeError as e:
@@ -144,18 +145,33 @@ if __name__=="__main__":
 			vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
 
 			if len(media_madfox) != 0 and len(centro_madfox) != 0 and achou_madfox == 1:
+				print('tamanho: ', madfox_tamanho)
+				replay = 0
 				dif_x = media_madfox[0]-centro_madfox[0]
 				dif_y = media_madfox[1]-centro_madfox[1]
 				if dif_x < 0: # Vira a esquerda
-					vel = Twist(Vector3(0,0,0), Vector3(0,0,-5))
-					time.sleep(0.7)
-					print('esquerda')
+					if madfox_tamanho < 70000:
+						vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.1))
+					elif madfox_tamanho < 150000:
+						vel = Twist(Vector3(0,0,0), Vector3(0,0,-1))
+					elif madfox_tamanho < 400000:
+						vel = Twist(Vector3(0,0,0), Vector3(0,0,-4))
+					elif madfox_tamanho > 400000:
+						vel = Twist(Vector3(0,0,0), Vector3(0,0,-5))
+					time.sleep(0.4)
 				if dif_x > 0: # Vira a direita
-					vel = Twist(Vector3(0,0,0), Vector3(0,0,5))
-					time.sleep(0.7)
+					if madfox_tamanho < 70000:
+						vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.1))
+					elif madfox_tamanho < 150000:
+						vel = Twist(Vector3(0,0,0), Vector3(0,0,-1))
+					elif madfox_tamanho < 400000:
+						vel = Twist(Vector3(0,0,0), Vector3(0,0,-4))
+					elif madfox_tamanho > 400000:
+						vel = Twist(Vector3(0,0,0), Vector3(0,0,-5))
+					time.sleep(0.4)
 			else: 
 				print('nao achou_madfox')
-				vel = Twist(Vector3(0.01,0,0), Vector3(0,0,0))
+				vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
 			velocidade_saida.publish(vel)
 			rospy.sleep(0.01)
 

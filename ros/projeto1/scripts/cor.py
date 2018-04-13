@@ -35,8 +35,8 @@ def identifica_cor(frame):
 	# do vermelho:
 	frame_hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-	cor_menor = np.array([60, 55, 100])
-	cor_maior = np.array([100, 130, 130])
+	cor_menor = np.array([40, 170, 90])
+	cor_maior = np.array([100, 250, 180])
 	segmentado_cor = cv2.inRange(frame_hsv, cor_menor, cor_maior)
 
 	#cor_menor = np.array([172, 50, 50])
@@ -98,7 +98,7 @@ def roda_todo_frame(imagem):
 	try:
 		antes = time.clock()
 		cv_image = bridge.compressed_imgmsg_to_cv2(imagem, "bgr8")
-		media_objeto, centro_objeto = identifica_cor(cv_image)
+		media_objeto, centro_objeto, objeto_tamanho = identifica_cor(cv_image)
 		depois = time.clock()
 		cv2.imshow("Camera", cv_image)
 	except CvBridgeError as e:
@@ -125,12 +125,12 @@ if __name__=="__main__":
 				dif_x = media_objeto[0]-centro_objeto[0]
 				dif_y = media_objeto[1]-centro_objeto[1]
 				if math.fabs(dif_x)<30: # Se a media_objeto estiver muito proxima do centro_objeto anda para frente
-					vel = Twist(Vector3(0.5,0,0), Vector3(0,0,0))
+					vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
 				else:
 					if dif_x > 0: # Vira a direita
-						vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.2))
+						vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
 					else: # Vira a esquerda
-						vel = Twist(Vector3(0,0,0), Vector3(0,0,0.2))
+						vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
 			velocidade_saida.publish(vel)
 			rospy.sleep(0.01)
 

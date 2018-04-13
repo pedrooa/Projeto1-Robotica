@@ -21,24 +21,23 @@ global tempo
 
 global colisao
 colisao = False
-
+global x
+x=0
 
 def leu_imu(dado):
 	global prox
 	global t
 	global tempo
 	global colisao
-
+	global x
 	tempo2 = dado.header.stamp
 	delta = rospy.Duration(secs=0.12)
 	l[prox%t] = dado.linear_acceleration.x 
 
 	media = np.mean(l)
-	print(media)
-
 	if colisao == False:
 		velocidade = Twist(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0))
-		if media < -1.2:
+		if media < -2.4:
 			print('bateus')
 			tempo = dado.header.stamp
 			colisao = True
@@ -47,10 +46,13 @@ def leu_imu(dado):
 		if (tempo2-tempo) < 30*delta :
 			print(tempo2-tempo)
 			print(30*delta)
-			velocidade = Twist(Vector3(0.05, 0.05, 0.05), Vector3(0, 0, 0.2))
+			velocidade = Twist(Vector3(0.3, 0, 0), Vector3(0, 0, 0))
 			velocidade_saida.publish(velocidade)
 		else:
 			colisao = False
+			velocidade = Twist(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0))
+			velocidade_saida.publish(velocidade)
+
 
 	print(colisao)
 

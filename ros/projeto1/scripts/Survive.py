@@ -12,23 +12,24 @@ from sensor_msgs.msg import LaserScan
 def scaneou(dado):
 	#print("Faixa valida: ", dado.range_min , " - ", dado.range_max )
 	#print("Leituras:")
+	#velocidade=Twist(Vector3(0, 0, 0), Vector3(0, 0, 0))
 	Distancias = np.array(dado.ranges).round(decimals=2)
 	for distancia in Distancias[300:]:
 
-		if distancia < 0.5 and distancia > 0.1:
+		if distancia < 0.3 and distancia > 0.1:
 			print("girando esquerda")
 			print(min(Distancias))
 
 			velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, -3))
 		else: 
-			velocidade = Twist(Vector3(0.2, 0.2, 0.2), Vector3(0, 0, 0))
+			velocidade = Twist(Vector3(0.1, 0.1, 0.1), Vector3(0, 0, 0))
 
 		velocidade_saida.publish(velocidade)
 
 
 	for distancia in Distancias[:60]:
 
-		if distancia < 0.5 and distancia > 0.1:
+		if distancia < 0.3 and distancia > 0.1:
 			print("girando direita")
 			print(min(Distancias))
 
@@ -43,18 +44,19 @@ def scaneou(dado):
 
 def sobrevive(Distancias, velocidade_saida):
 	print("TESTE")
-	velocidade = Twist(Vector3(0.2, 0.2, 0.2), Vector3(0, 0, 0))
+	velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0))
+
 	for distancia in Distancias[300:]:
 
 		if distancia < 0.3 and distancia > 0.1:
 			print("girando esquerda")
 			print(min(Distancias))
 
-			velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, -3))
+			velocidade = Twist(Vector3(0.2, 0, 0), Vector3(0, 0, 3))
+			
+			velocidade_saida.publish(velocidade)
 		
-
-		
-		velocidade_saida.publish(velocidade)
+			#velocidade_saida.publish(velocidade)
 
 
 	for distancia in Distancias[:60]:
@@ -63,9 +65,12 @@ def sobrevive(Distancias, velocidade_saida):
 			print("girando direita")
 			print(min(Distancias))
 
-			velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 3))
+			velocidade = Twist(Vector3(0.2, 0, 0), Vector3(0, 0, -3))
+			
 		# else: 
 		# 	velocidade = Twist(Vector3(-0.2, -0.2, -0.2), Vector3(0, 0, 0))
+
+			#velocidade_saida.publish(velocidade)
 
 			velocidade_saida.publish(velocidade)
 	#print("Intensities")
