@@ -8,39 +8,69 @@ import numpy as np
 from geometry_msgs.msg import Twist, Vector3
 from sensor_msgs.msg import LaserScan
 
+global x  
+x = True
 
 def scaneou(dado):
+	global x
 	#print("Faixa valida: ", dado.range_min , " - ", dado.range_max )
 	#print("Leituras:")
-	#velocidade=Twist(Vector3(0, 0, 0), Vector3(0, 0, 0))
 	Distancias = np.array(dado.ranges).round(decimals=2)
-	for distancia in Distancias[300:]:
+	#print(Distancias[315])
+	for distancia in Distancias[355:]:
 
-		if distancia < 0.3 and distancia > 0.1:
-			print("girando esquerda")
-			print(min(Distancias))
+		if distancia < 0.4 and distancia != 0.0:
+			x = False
 
-			velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, -3))
-		else: 
-			velocidade = Twist(Vector3(0.1, 0.1, 0.1), Vector3(0, 0, 0))
+			velocidade = Twist(Vector3(-0.2, -0.2, -0.2), Vector3(0, 0, -3))
 
+		else:
+			x = True
+			velocidade = Twist(Vector3(0.2, 0.2, 0.2), Vector3(0, 0, 0))
+		
+		velocidade_saida.publish(velocidade)
+
+	for distancia in Distancias[:5]:
+
+		if distancia < 0.4 and distancia != 0.0:
+			x = False
+
+			velocidade = Twist(Vector3(-0.2, -0.2, -0.2), Vector3(0, 0, -3))
+
+		else:
+			x = True
+			velocidade = Twist(Vector3(0.2, 0.2, 0.2), Vector3(0, 0, 0))
+		
 		velocidade_saida.publish(velocidade)
 
 
-	for distancia in Distancias[:60]:
+	print(x)
 
-		if distancia < 0.3 and distancia > 0.1:
-			print("girando direita")
-			print(min(Distancias))
+	if x == True:
 
-			velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 3))
+		for distancia in Distancias[300:350]:
+
+			if distancia < 0.3 and distancia != 0.0:
+				
+				velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 3))
+	#		else: 
+	#			velocidade = Twist(Vector3(0.2, 0.2, 0.2), Vector3(0, 0, 0))
+
+			velocidade_saida.publish(velocidade)
+
+
+		for distancia in Distancias[10:60]:
+
+			if distancia < 0.3 and distancia != 0.0:
+				#print(distancia)
+				
+
+				velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, -3))
 		#else: 
 		#	velocidade = Twist(Vector3(0.2, 0.2, 0.2), Vector3(0, 0, 0))
 
-		velocidade_saida.publish(velocidade)
+			velocidade_saida.publish(velocidade)
 	#print("Intensities")
-	#print(np.array(dado.intensities).round(decimals=2))
-
 
 def sobrevive(Distancias, velocidade_saida):
 	print("TESTE")
