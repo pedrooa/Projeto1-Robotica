@@ -59,7 +59,7 @@ def leu_imu(dado):
 
 	prox+=1
 
-
+'''
 	quat = dado.orientation
 	print(quat)
 	lista = [quat.x, quat.y, quat.z, quat.w]
@@ -73,7 +73,7 @@ def leu_imu(dado):
 	y: {:.2f}
 	z: {:.2f}
 """.format(dado.header.stamp, angulos[0], angulos[1], angulos[2], dado.angular_velocity.x, dado.angular_velocity.y, dado.angular_velocity.z, dado.linear_acceleration.x, dado.linear_acceleration.y, dado.linear_acceleration.z)
-	print(mensagem)
+	print(mensagem)'''
 
 	
 
@@ -91,3 +91,16 @@ if __name__=="__main__":
 		
 		velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 3))
 
+def colidiu(velocidade_saida, tempo, tempo2):
+	delta = rospy.Duration(secs=0.12)
+	global colisao
+	if (tempo2-tempo) < 30*delta :
+		print(tempo2-tempo)
+		print(30*delta)
+		velocidade = Twist(Vector3(0.3, 0, 0), Vector3(0, 0, 0))
+		velocidade_saida.publish(velocidade)
+	else:
+		velocidade = Twist(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0))
+		velocidade_saida.publish(velocidade)
+		colisao = False
+		print(colisao)
