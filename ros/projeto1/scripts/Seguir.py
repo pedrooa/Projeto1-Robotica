@@ -6,8 +6,9 @@ from geometry_msgs.msg import Twist, Vector3
 from sensor_msgs.msg import LaserScan
 
 
-def segue(velocidade_saida, media_objeto, centro_objeto):
+def segue(velocidade_saida, media_objeto, centro_objeto, tamanho_objeto):
 	vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
+	print(tamanho_objeto)
 	if len(media_objeto) != 0 and len(centro_objeto) != 0:
 		dif_x = media_objeto[0] - centro_objeto[0]
 		dif_y = media_objeto[1] - centro_objeto[1]

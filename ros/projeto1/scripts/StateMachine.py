@@ -202,7 +202,7 @@ class Seguir(smach.State):
 		elif madfox_tamanho > objeto_tamanho:
 			return 'AchouMadfox'
 		elif objeto_tamanho > madfox_tamanho:
-			segue(velocidade_saida, media_objeto, centro_objeto)
+			segue(velocidade_saida, media_objeto, centro_objeto, objeto_tamanho)
 			return 'AchouObjeto'
 		else:
 			return 'NaoAchou'
