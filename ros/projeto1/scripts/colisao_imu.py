@@ -93,7 +93,6 @@ if __name__=="__main__":
 
 def colidiu(velocidade_saida, tempo, tempo2):
 	delta = rospy.Duration(secs=0.12)
-	global colisao
 	if (tempo2-tempo) < 30*delta :
 		print(tempo2-tempo)
 		print(30*delta)

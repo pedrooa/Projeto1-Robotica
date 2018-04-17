@@ -21,7 +21,8 @@ import deteccao
 from Fugir import foge
 from Seguir import segue
 from Survive import sobrevive
-from colisao_imu import colidiu
+#from colisao_imu import colidiu
+import colisao_imu
 import Gira
 import cor
 import cv2
@@ -35,7 +36,7 @@ check_delay = True # configure as needed
 madfox_tamanho = 0
 objeto_tamanho = 0
 achou_obstaculo = False
-velocidadenula = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0))
+velocidadenula = Twist(Vector3(0.1, 0, 0), Vector3(0, 0, 0))
 global t
 t = 3
 global l 
@@ -96,8 +97,19 @@ def recebe_imagem(imagem):
 def recebe_laser(dado):
 	global Distancias
 	global achou_obstaculo
-	print("chegoulaser")
 	Distancias = np.array(dado.ranges).round(decimals=2)
+	for distancia in Distancias[0:60]:
+		if distancia < 0.3 and distancia > 0.1:
+			print(distancia)
+			achou_obstaculo = True
+			print(achou_obstaculo)
+			
+			break
+		else:
+			achou_obstaculo = False
+			
+
+
 	for distancia in Distancias[300:]:
 		if distancia < 0.3 and distancia > 0.1:
 			print(distancia)
@@ -108,6 +120,7 @@ def recebe_laser(dado):
 		else:
 			achou_obstaculo = False
 			
+
 
 def leu_imu(dado):
 	global prox
@@ -122,8 +135,8 @@ def leu_imu(dado):
 	tempo2 = dado.header.stamp
 	media = np.mean(l)
 	if colisao == False:
-		if media < -2.4:
-			print(media)
+		if media < -3.0:
+			print("rola")
 			tempo = dado.header.stamp
 			colisao = True
 		else:
@@ -215,8 +228,15 @@ class Colisao(smach.State):
 		smach.State.__init__(self, outcomes=['AchouMadfox', 'AchouObjeto','AchouObstaculo','NaoAchou', 'Colidiu'])
 
 	def execute(self, userdata):
-		colidiu(velocidade_saida, tempo, tempo2)
-		print(colisao)
+		global colisao
+		delta = rospy.Duration(secs=0.12)
+		if (tempo2-tempo) < 10*delta :
+			velocidade = Twist(Vector3(-0.3, 0, 0), Vector3(0, 0, 0))
+			velocidade_saida.publish(velocidade)
+		else:
+			velocidade = Twist(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0))
+			velocidade_saida.publish(velocidade)
+			colisao = False
 		if colisao == True:
 			return 'Colidiu'			
 		elif achou_obstaculo == True:
