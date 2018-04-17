@@ -90,6 +90,7 @@ def sobrevive(Distancias, velocidade_saida):
 			velocidade = Twist(Vector3(0.2, 0.2, 0.2), Vector3(0, 0, 0))
 		
 		velocidade_saida.publish(velocidade)
+		rospy.sleep(0.01)
 
 	for distancia in Distancias[:5]:
 
@@ -103,6 +104,7 @@ def sobrevive(Distancias, velocidade_saida):
 			velocidade = Twist(Vector3(0.2, 0.2, 0.2), Vector3(0, 0, 0))
 		
 		velocidade_saida.publish(velocidade)
+		rospy.sleep(0.01)
 
 
 	print(x)
@@ -118,6 +120,7 @@ def sobrevive(Distancias, velocidade_saida):
 	#			velocidade = Twist(Vector3(0.2, 0.2, 0.2), Vector3(0, 0, 0))
 
 			velocidade_saida.publish(velocidade)
+			rospy.sleep(0.01)
 
 
 		for distancia in Distancias[10:60]:
@@ -131,6 +134,7 @@ def sobrevive(Distancias, velocidade_saida):
 		#	velocidade = Twist(Vector3(0.2, 0.2, 0.2), Vector3(0, 0, 0))
 
 			velocidade_saida.publish(velocidade)
+			rospy.sleep(0.01)
 
 
 

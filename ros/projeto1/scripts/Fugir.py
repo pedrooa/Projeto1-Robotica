@@ -14,10 +14,10 @@ def foge(velocidade_saida, media_madfox, centro_madfox, achou_madfox):
 		dif_y = media_madfox[1]-centro_madfox[1]
 	if dif_x < 0: # Vira a esquerda
 		vel = Twist(Vector3(0,0,0), Vector3(0,0,-5))
-		time.sleep(0.1)
+		rospy.sleep(0.01)
 		print('esquerda')
 	if dif_x > 0: # Viraa direita
 			vel = Twist(Vector3(0,0,0), Vector3(0,0,5))
-			time.sleep(0.1)
+			rospy.sleep(0.01)
 	velocidade_saida.publish(vel)
 	rospy.sleep(0.01)

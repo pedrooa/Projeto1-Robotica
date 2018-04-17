@@ -36,7 +36,7 @@ check_delay = True # configure as needed
 madfox_tamanho = 0
 objeto_tamanho = 0
 achou_obstaculo = False
-velocidadenula = Twist(Vector3(0.1, 0, 0), Vector3(0, 0, 0))
+velocidadenula = Twist(Vector3(0.15, 0, 0), Vector3(0, 0, 0))
 global t
 t = 3
 global l 
@@ -155,6 +155,7 @@ class Rest(smach.State):
 
 	def execute(self, userdata):
 		velocidade_saida.publish(velocidadenula)
+		rospy.sleep(0.01)
 		if colisao == True:
 			return 'Colidiu'
 		if achou_obstaculo == True:
@@ -233,9 +234,11 @@ class Colisao(smach.State):
 		if (tempo2-tempo) < 10*delta :
 			velocidade = Twist(Vector3(-0.3, 0, 0), Vector3(0, 0, 0))
 			velocidade_saida.publish(velocidade)
+			rospy.sleep(0.01)
 		else:
 			velocidade = Twist(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0))
 			velocidade_saida.publish(velocidade)
+			rospy.sleep(0.01)
 			colisao = False
 		if colisao == True:
 			return 'Colidiu'			
