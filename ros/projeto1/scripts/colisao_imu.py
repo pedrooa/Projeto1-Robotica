@@ -94,8 +94,6 @@ if __name__=="__main__":
 def colidiu(velocidade_saida, tempo, tempo2):
 	delta = rospy.Duration(secs=0.12)
 	if (tempo2-tempo) < 30*delta :
-		print(tempo2-tempo)
-		print(30*delta)
 		velocidade = Twist(Vector3(0.3, 0, 0), Vector3(0, 0, 0))
 		velocidade_saida.publish(velocidade)
 	else:

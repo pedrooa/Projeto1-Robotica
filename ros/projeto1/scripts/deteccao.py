@@ -30,14 +30,12 @@ FLANN_INDEX_KDITREE = 0
 flannParam = dict(algorithm=FLANN_INDEX_KDITREE,tree=5)
 flann = cv2.FlannBasedMatcher(flannParam,{})
 
-img1 = cv2.imread("/home/borg/catkin_ws/src/Projeto1-Robotica/ros/projeto1/scripts/madfox.jpg",0)
-#time.sleep(3)
-trainKP,trainDesc = sift.detectAndCompute(img1,None)
 
 
 
 
-def detecta_imagem(frame):
+
+def detecta_imagem(frame,trainKP,trainDesc,img1):
 	achou_madfox = 0
 
 ######## algoritmo de deteccao da imagem (copiada do projeto madfox)
@@ -94,7 +92,6 @@ def detecta_imagem(frame):
 		cv2.polylines(bordas_color,[np.int32(queryBorder)],True,(0,255,0),5)
 	else:
 		media_madfox = (0,0)
-		print "Raposa nao encontrada- %d/%d"%(len(goodMatch),MIN_MATCH_COUNT)
 		madfox_tamanho = 0
 
 	

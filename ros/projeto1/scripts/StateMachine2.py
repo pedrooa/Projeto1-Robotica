@@ -36,7 +36,7 @@ check_delay = True # configure as needed
 madfox_tamanho = 0
 objeto_tamanho = 0
 achou_obstaculo = False
-velocidadenula = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0))
+velocidadenula = Twist(Vector3(0.1, 0, 0), Vector3(0, 0, 0))
 global t
 t = 3
 global l 
@@ -52,15 +52,93 @@ x=0
 tempo2 = rospy.Duration(secs=0)
 tempo = rospy.Duration(secs=0)
 
+global fundo
+global foto
+
 # configuracao da imagem detectada
 sift = cv2.xfeatures2d.SIFT_create()
 FLANN_INDEX_KDITREE = 0
 flannParam = dict(algorithm=FLANN_INDEX_KDITREE,tree=5)
 flann = cv2.FlannBasedMatcher(flannParam,{})
 
+
+
 img1 = cv2.imread("/home/borg/catkin_ws/src/Projeto1-Robotica/ros/projeto1/scripts/madfox.jpg",0)
 time.sleep(2)
 trainKP,trainDesc = sift.detectAndCompute(img1,None)
+
+
+
+
+def sub(frame):
+	fundo = frame.copy()
+		
+	fundo = cv2.cvtColor(fundo, cv2.COLOR_BGR2GRAY)
+	#fundo = cv2.cvtColor(fundo, cv2.COLOR_BGR2RGB)
+	cv2.imwrite("fundo.jpg", fundo)
+	print('troq+ue')
+	return fundo
+
+
+def sub2(frame,fundo):
+	#ret, frame = cap.read()
+	print('snap')
+	foto1 = frame.copy()
+	foto = cv2.cvtColor(foto1, cv2.COLOR_BGR2GRAY)
+	#foto = cv2.cvtColor(foto, cv2.COLOR_BGR2RGB)
+	cv2.imwrite("foto.jpg", foto)
+	diferenca = cv2.subtract(foto,fundo)
+	diferenca2 = cv2.subtract(fundo,foto)
+	or_img = cv2.bitwise_or(diferenca, diferenca2)
+	ret,limiar = cv2.threshold(or_img,np.percentile(or_img, 97),255,cv2.THRESH_BINARY)
+	kernel = np.ones((4,4))
+	limiar_open = cv2.morphologyEx(limiar, cv2.MORPH_OPEN, kernel)
+	limiar_close = cv2.morphologyEx(limiar, cv2.MORPH_CLOSE, kernel)
+	cv2.imwrite("frame.jpg", limiar_open)
+	cv2.imwrite("frame2.jpg", limiar_close)
+	cv2.imwrite("frame3.jpg", limiar)
+	cv2.imwrite("frame32.jpg", or_img)
+
+	segmentado_cor = cv2.morphologyEx(limiar_close,cv2.MORPH_CLOSE,np.ones((7, 7)))
+
+	img_out, contornos, arvore = cv2.findContours(segmentado_cor.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE) 
+
+	maior_contorno = None
+	objeto_tamanho = 0
+
+	for cnt in contornos:
+		area = cv2.contourArea(cnt)
+		if area > objeto_tamanho:
+			maior_contorno = cnt
+			objeto_tamanho = area
+	x, y, w, h = cv2.boundingRect(maior_contorno)
+	objeto = foto1[y:(y+h),x:(x+w),:]
+	cv2.imwrite("objeto.jpg", objeto)
+
+
+	sift = cv2.xfeatures2d.SIFT_create()
+	FLANN_INDEX_KDITREE = 0
+	flannParam = dict(algorithm=FLANN_INDEX_KDITREE,tree=5)
+	flann = cv2.FlannBasedMatcher(flannParam,{})
+
+	trainKP,trainDesc = sift.detectAndCompute(objeto,None)
+	rospy.sleep(2)
+
+	return trainKP, trainDesc, objeto 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def recebe_imagem(imagem):
@@ -74,18 +152,20 @@ def recebe_imagem(imagem):
 	global achou_objeto
 	global objeto_tamanho
 	global achou_obstaculo
+	global trainKP
+	global trainDesc
 
 
 	now = rospy.get_rostime()
 	imgtime = imagem.header.stamp
-	lag = now-imgtimempo = dado.heade
+	lag = now-imgtime
 	delay = lag.secs
 	if delay > atraso and check_delay:
 		return 
 	try:
 		# antes = time.clock()
 		cv_image = bridge.compressed_imgmsg_to_cv2(imagem, "bgr8")
-		media_madfox, centro_madfox, achou_madfox, madfox_tamanho = deteccao.detecta_imagem(cv_image)
+		media_madfox, centro_madfox, achou_madfox, madfox_tamanho = deteccao.detecta_imagem(cv_image,trainKP,trainDesc,img1)
 		media_objeto, centro_objeto, objeto_tamanho = cor.identifica_cor(cv_image)
 		#media, centro, area = cormodule.identifica_cor(cv_image)
 		# depois = time.clock()
@@ -147,6 +227,22 @@ def leu_imu(dado):
 	prox +=1
 
 
+class Tirafoto(smach.State):
+	def __init__(self):
+		smach.State.__init__(self, outcomes=['NaoAchou'])
+
+	def execute(self, userdata):
+		global trainDesc
+		global trainKP
+		rospy.sleep(3)
+		fundo = sub(cv_image)
+		print('tirou')
+		rospy.sleep(6)
+		print('prepara')
+		rospy.sleep(2)
+		trainKP,trainDesc, img1 = sub2(cv_image,fundo)
+
+		return 'NaoAchou'
 
 class Rest(smach.State):
 	def __init__(self):
@@ -155,6 +251,7 @@ class Rest(smach.State):
 	def execute(self, userdata):
 		velocidade_saida.publish(velocidadenula)
 		rospy.sleep(0.01)
+
 		if colisao == True:
 			return 'Colidiu'
 		if achou_obstaculo == True:
@@ -263,7 +360,6 @@ def main():
 	recebe_imu = rospy.Subscriber("/imu", Imu, leu_imu)
 	
 
-
 	velocidade_saida = rospy.Publisher("/cmd_vel", Twist, queue_size = 1)
 
 	# Create a SMACH state machine
@@ -277,6 +373,9 @@ def main():
 		#                                    'perto':'terminei'})
 		#smach.StateMachine.add('ANDANDO', Andando(), 
 		#                       transitions={'ainda_longe':'LONGE'})
+
+		smach.StateMachine.add('TIRANDOFOTO', Tirafoto(),
+								transitions={'NaoAchou': 'REST',})
 		
 		smach.StateMachine.add('COLISAO', Colisao(),
 								transitions={'AchouMadfox': 'FUGIR',
