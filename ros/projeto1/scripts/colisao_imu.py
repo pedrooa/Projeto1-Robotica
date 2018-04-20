@@ -24,7 +24,7 @@ colisao = False
 global x
 x=0
 
-def leu_imu(dado):
+def leu_imu(dado):  #funcao para ler imu
 	global prox
 	global t
 	global tempo
@@ -58,25 +58,6 @@ def leu_imu(dado):
 
 
 	prox+=1
-
-'''
-	quat = dado.orientation
-	print(quat)
-	lista = [quat.x, quat.y, quat.z, quat.w]
-	angulos = np.degrees(transformations.euler_from_quaternion(lista))
-	mensagem = """
-	Tempo: {:}
-	Orientação: {:.2f}, {:.2f}, {:.2f}
-	Vel. angular: x {:.2f}, y {:.2f}, z {:.2f}\
-	Aceleração linear:
-	x: {:.2f}
-	y: {:.2f}
-	z: {:.2f}
-""".format(dado.header.stamp, angulos[0], angulos[1], angulos[2], dado.angular_velocity.x, dado.angular_velocity.y, dado.angular_velocity.z, dado.linear_acceleration.x, dado.linear_acceleration.y, dado.linear_acceleration.z)
-	print(mensagem)'''
-
-	
-
 
 if __name__=="__main__":
 

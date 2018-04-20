@@ -6,7 +6,7 @@ from geometry_msgs.msg import Twist, Vector3
 from sensor_msgs.msg import LaserScan
 
 
-def foge(velocidade_saida, media_madfox, centro_madfox, achou_madfox):
+def foge(velocidade_saida, media_madfox, centro_madfox, achou_madfox):  #funcao para a reacao de fugir da imagem detectada
 	vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
 
 	if len(media_madfox) != 0 and len(centro_madfox) != 0 and achou_madfox == 1:
@@ -16,7 +16,7 @@ def foge(velocidade_saida, media_madfox, centro_madfox, achou_madfox):
 		vel = Twist(Vector3(0,0,0), Vector3(0,0,-5))
 		rospy.sleep(0.01)
 		print('esquerda')
-	if dif_x > 0: # Viraa direita
+	if dif_x > 0: # Vira a direita
 			vel = Twist(Vector3(0,0,0), Vector3(0,0,5))
 			rospy.sleep(0.01)
 	velocidade_saida.publish(vel)

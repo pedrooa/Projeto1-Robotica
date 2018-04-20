@@ -11,17 +11,13 @@ from sensor_msgs.msg import LaserScan
 global x  
 x = True
 
-def scaneou(dado):
+def scaneou(dado):  #funcao para desviar de objetos
 	global x
-	#print("Faixa valida: ", dado.range_min , " - ", dado.range_max )
-	#print("Leituras:")
 	Distancias = np.array(dado.ranges).round(decimals=2)
-	#print(Distancias[315])
 	for distancia in Distancias[355:]:
 
 		if distancia < 0.4 and distancia != 0.0:
 			x = False
-
 			velocidade = Twist(Vector3(-0.2, -0.2, -0.2), Vector3(0, 0, -3))
 
 		else:
@@ -34,7 +30,6 @@ def scaneou(dado):
 
 		if distancia < 0.4 and distancia != 0.0:
 			x = False
-
 			velocidade = Twist(Vector3(-0.2, -0.2, -0.2), Vector3(0, 0, -3))
 
 		else:
@@ -44,45 +39,25 @@ def scaneou(dado):
 		velocidade_saida.publish(velocidade)
 
 
-	print(x)
-
 	if x == True:
-
 		for distancia in Distancias[300:350]:
-
 			if distancia < 0.3 and distancia != 0.0:
-				
 				velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 3))
-	#		else: 
-	#			velocidade = Twist(Vector3(0.2, 0.2, 0.2), Vector3(0, 0, 0))
 
 			velocidade_saida.publish(velocidade)
 
-
 		for distancia in Distancias[10:60]:
-
 			if distancia < 0.3 and distancia != 0.0:
-				#print(distancia)
-				
-
 				velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, -3))
-		#else: 
-		#	velocidade = Twist(Vector3(0.2, 0.2, 0.2), Vector3(0, 0, 0))
 
 			velocidade_saida.publish(velocidade)
 
 
 def sobrevive(Distancias, velocidade_saida):
 	global x
-	#print("Faixa valida: ", dado.range_min , " - ", dado.range_max )
-	#print("Leituras:")
-	#Distancias = np.array(dado.ranges).round(decimals=2)
-	#print(Distancias[315])
 	for distancia in Distancias[355:]:
-
 		if distancia < 0.4 and distancia != 0.0:
 			x = False
-
 			velocidade = Twist(Vector3(-0.2, -0.2, -0.2), Vector3(0, 0, -3))
 
 		else:
@@ -93,10 +68,8 @@ def sobrevive(Distancias, velocidade_saida):
 		rospy.sleep(0.01)
 
 	for distancia in Distancias[:5]:
-
 		if distancia < 0.4 and distancia != 0.0:
 			x = False
-
 			velocidade = Twist(Vector3(-0.2, -0.2, -0.2), Vector3(0, 0, -3))
 
 		else:
@@ -106,37 +79,20 @@ def sobrevive(Distancias, velocidade_saida):
 		velocidade_saida.publish(velocidade)
 		rospy.sleep(0.01)
 
-
-	print(x)
-
 	if x == True:
-
 		for distancia in Distancias[300:350]:
-
-			if distancia < 0.3 and distancia != 0.0:
-				
+			if distancia < 0.3 and distancia != 0.0:	
 				velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 3))
-	#		else: 
-	#			velocidade = Twist(Vector3(0.2, 0.2, 0.2), Vector3(0, 0, 0))
 
 			velocidade_saida.publish(velocidade)
 			rospy.sleep(0.01)
-
 
 		for distancia in Distancias[10:60]:
-
 			if distancia < 0.3 and distancia != 0.0:
-				#print(distancia)
-				
-
 				velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, -3))
-		#else: 
-		#	velocidade = Twist(Vector3(0.2, 0.2, 0.2), Vector3(0, 0, 0))
 
 			velocidade_saida.publish(velocidade)
 			rospy.sleep(0.01)
-
-
 
 if __name__=="__main__":
 
@@ -148,8 +104,6 @@ if __name__=="__main__":
 
 
 	while not rospy.is_shutdown():
-		print("Oeee")
-		
 		rospy.sleep(2)
 
 

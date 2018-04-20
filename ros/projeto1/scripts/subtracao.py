@@ -8,24 +8,21 @@ import time as t
 import rospy
 
 
-
+# CODIGO USADO PARA TESTAR A SUBTRACAO DE FUNDO, ESSE ARQUIVO NAO É UTILIZADO NO PROGRAMA PRINCIPAL
 
 def sub(frame):
 	fundo = frame.copy()
 		
 	fundo = cv2.cvtColor(fundo, cv2.COLOR_BGR2GRAY)
-	#fundo = cv2.cvtColor(fundo, cv2.COLOR_BGR2RGB)
 	cv2.imwrite("fundo.jpg", fundo)
 	print('troq+ue')
 	return fundo
 
 
 def sub2(frame):
-	#ret, frame = cap.read()
 	print('snap')
 	foto1 = frame.copy()
 	foto = cv2.cvtColor(foto1, cv2.COLOR_BGR2GRAY)
-	#foto = cv2.cvtColor(foto, cv2.COLOR_BGR2RGB)
 	cv2.imwrite("foto.jpg", foto)
 	diferenca = cv2.subtract(foto,fundo)
 	diferenca2 = cv2.subtract(fundo,foto)
@@ -38,11 +35,8 @@ def sub2(frame):
 	cv2.imwrite("frame2.jpg", limiar_close)
 	cv2.imwrite("frame3.jpg", limiar)
 	cv2.imwrite("frame32.jpg", or_img)
-
 	segmentado_cor = cv2.morphologyEx(limiar_close,cv2.MORPH_CLOSE,np.ones((7, 7)))
-
 	img_out, contornos, arvore = cv2.findContours(segmentado_cor.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE) 
-
 	maior_contorno = None
 	objeto_tamanho = 0
 

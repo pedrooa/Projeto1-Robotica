@@ -24,24 +24,12 @@ atraso = 0.4E9
 
 check_delay = True # Só usar se os relógios ROS da Raspberry e do Linux desktop estiverem sincronizados
 
-def identifica_cor(frame):
-	'''
-	Segmenta o maior objeto cuja cor é parecida com cor_h (HUE da cor, no espaço HSV).
-	'''
+def identifica_cor(frame):  #funcao para identificar objeto da cor especificada usada no robo
 
-	# No OpenCV, o canal H vai de 0 até 179, logo cores similares ao 
-	# vermelho puro (H=0) estão entre H=-8 e H=8. 
-	# Precisamos dividir o inRange em duas partes para fazer a detecção 
-	# do vermelho:
 	frame_hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-
 	cor_menor = np.array([40, 90, 115])
 	cor_maior = np.array([70, 135, 186])
 	segmentado_cor = cv2.inRange(frame_hsv, cor_menor, cor_maior)
-
-	#cor_menor = np.array([172, 50, 50])
-	#cor_maior = np.array([180, 255, 255])
-	#segmentado_cor += cv2.inRange(frame_hsv, cor_menor, cor_maior)
 
 
 	# A operação MORPH_CLOSE fecha todos os buracos na máscara menores 

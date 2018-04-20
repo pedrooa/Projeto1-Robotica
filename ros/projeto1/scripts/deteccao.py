@@ -24,7 +24,6 @@ achou_madfox = 0
 check_delay = True # Só usar se os relógios ROS da Raspberry e do Linux desktop estiverem sincronizados
 
 
-# configuracao da imagem detectada
 sift = cv2.xfeatures2d.SIFT_create()
 FLANN_INDEX_KDITREE = 0
 flannParam = dict(algorithm=FLANN_INDEX_KDITREE,tree=5)
@@ -35,7 +34,7 @@ flann = cv2.FlannBasedMatcher(flannParam,{})
 
 
 
-def detecta_imagem(frame,trainKP,trainDesc,img1):
+def detecta_imagem(frame,trainKP,trainDesc,img1):  #funcao para identificar imagem determinada, no caso aprendida na hora pelo robo
 	achou_madfox = 0
 
 ######## algoritmo de deteccao da imagem (copiada do projeto madfox)
@@ -76,14 +75,14 @@ def detecta_imagem(frame,trainKP,trainDesc,img1):
 		media_madfox_x = (x0+x1+x2+x3)/4.0
 		media_madfox_y = (y0+y1+y2+y3)/4.0
 
-		media_madfox = (media_madfox_x, media_madfox_y)   # probelma no y centro_madfox centro_madfox da imagem detectada
+		media_madfox = (media_madfox_x, media_madfox_y)
 
-		centro_madfox = (frame.shape[1]//2, frame.shape[0]//2)  # centro_madfox da webcam
+		centro_madfox = (frame.shape[1]//2, frame.shape[0]//2)
 
 		dif_x = media_madfox[0]-centro_madfox[0]
 		dif_y = media_madfox[1]-centro_madfox[1]
 
-		##madfox_tamanho da imagem
+		# madfox_tamanho da imagem
 		tx = x3 - x0
 		ty = y1 - y0
 		madfox_tamanho = (tx*ty)

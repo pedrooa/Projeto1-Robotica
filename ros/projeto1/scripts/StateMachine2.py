@@ -21,7 +21,6 @@ import deteccao
 from Fugir import foge
 from Seguir import segue
 from Survive import sobrevive
-#from colisao_imu import colidiu
 import colisao_imu
 import Gira
 import cor
@@ -32,7 +31,7 @@ from cv_bridge import CvBridge, CvBridgeError
 bridge = CvBridge()
 
 atraso = 0.4E9
-check_delay = True # configure as needed
+check_delay = True 
 madfox_tamanho = 0
 objeto_tamanho = 0
 achou_obstaculo = False
@@ -70,39 +69,23 @@ trainKP,trainDesc = sift.detectAndCompute(img1,None)
 
 
 
-def sub(frame):
+def sub(frame): #funcao para tirar foto do fundo
 	fundo = frame.copy()
-		
 	fundo = cv2.cvtColor(fundo, cv2.COLOR_BGR2GRAY)
-	#fundo = cv2.cvtColor(fundo, cv2.COLOR_BGR2RGB)
-	cv2.imwrite("fundo.jpg", fundo)
-	print('troq+ue')
 	return fundo
 
 
-def sub2(frame,fundo):
-	#ret, frame = cap.read()
-	print('snap')
+def sub2(frame,fundo):  #funcao para tirar foto do objeto e realizar a subtracao de fundo, ja retornando os valores para o sift deterctar a nova imagem
 	foto1 = frame.copy()
 	foto = cv2.cvtColor(foto1, cv2.COLOR_BGR2GRAY)
-	#foto = cv2.cvtColor(foto, cv2.COLOR_BGR2RGB)
-	cv2.imwrite("foto.jpg", foto)
 	diferenca = cv2.subtract(foto,fundo)
 	diferenca2 = cv2.subtract(fundo,foto)
 	or_img = cv2.bitwise_or(diferenca, diferenca2)
 	ret,limiar = cv2.threshold(or_img,np.percentile(or_img, 97),255,cv2.THRESH_BINARY)
 	kernel = np.ones((4,4))
-	limiar_open = cv2.morphologyEx(limiar, cv2.MORPH_OPEN, kernel)
 	limiar_close = cv2.morphologyEx(limiar, cv2.MORPH_CLOSE, kernel)
-	cv2.imwrite("frame.jpg", limiar_open)
-	cv2.imwrite("frame2.jpg", limiar_close)
-	cv2.imwrite("frame3.jpg", limiar)
-	cv2.imwrite("frame32.jpg", or_img)
-
 	segmentado_cor = cv2.morphologyEx(limiar_close,cv2.MORPH_CLOSE,np.ones((7, 7)))
-
 	img_out, contornos, arvore = cv2.findContours(segmentado_cor.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE) 
-
 	maior_contorno = None
 	objeto_tamanho = 0
 
@@ -115,33 +98,17 @@ def sub2(frame,fundo):
 	objeto = foto1[y:(y+h),x:(x+w),:]
 	cv2.imwrite("objeto.jpg", objeto)
 
-
 	sift = cv2.xfeatures2d.SIFT_create()
 	FLANN_INDEX_KDITREE = 0
 	flannParam = dict(algorithm=FLANN_INDEX_KDITREE,tree=5)
 	flann = cv2.FlannBasedMatcher(flannParam,{})
-
 	trainKP,trainDesc = sift.detectAndCompute(objeto,None)
 	rospy.sleep(2)
 
 	return trainKP, trainDesc, objeto 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def recebe_imagem(imagem):
+def recebe_imagem(imagem):  #funcao para receber imagem do robo e usar as fucnoes de identificao de imagem
 	global cv_image
 	global media_madfox
 	global centro_madfox
@@ -163,46 +130,33 @@ def recebe_imagem(imagem):
 	if delay > atraso and check_delay:
 		return 
 	try:
-		# antes = time.clock()
 		cv_image = bridge.compressed_imgmsg_to_cv2(imagem, "bgr8")
 		media_madfox, centro_madfox, achou_madfox, madfox_tamanho = deteccao.detecta_imagem(cv_image,trainKP,trainDesc,img1)
 		media_objeto, centro_objeto, objeto_tamanho = cor.identifica_cor(cv_image)
-		#media, centro, area = cormodule.identifica_cor(cv_image)
-		# depois = time.clock()
 		cv2.imshow("Camera", cv_image)
 	except CvBridgeError as e:
 		print('ex', e);
 
 
-def recebe_laser(dado):
+def recebe_laser(dado):  #funcao para receber laser do robo
 	global Distancias
 	global achou_obstaculo
 	Distancias = np.array(dado.ranges).round(decimals=2)
 	for distancia in Distancias[0:60]:
 		if distancia < 0.3 and distancia > 0.1:
-			print(distancia)
 			achou_obstaculo = True
-			print(achou_obstaculo)
-			
 			break
 		else:
 			achou_obstaculo = False
-			
-
-
 	for distancia in Distancias[300:]:
 		if distancia < 0.3 and distancia > 0.1:
-			print(distancia)
 			achou_obstaculo = True
-			print(achou_obstaculo)
-			
 			break
 		else:
 			achou_obstaculo = False
-			
 
 
-def leu_imu(dado):
+def leu_imu(dado):  #funcao para receber informacoes da IMU do robo
 	global prox
 	global t
 	global tempo
@@ -210,24 +164,19 @@ def leu_imu(dado):
 	global x
 	global tempo2
 	
-	
 	l[prox%t] = dado.linear_acceleration.x 
 	tempo2 = dado.header.stamp
 	media = np.mean(l)
 	if colisao == False:
 		if media < -3.0:
-			print("rola")
 			tempo = dado.header.stamp
 			colisao = True
 		else:
 			colisao = False
-			
-	
-
 	prox +=1
 
 
-class Tirafoto(smach.State):
+class Tirafoto(smach.State):  #estado incial para aprender objeto novo
 	def __init__(self):
 		smach.State.__init__(self, outcomes=['NaoAchou'])
 
@@ -244,7 +193,7 @@ class Tirafoto(smach.State):
 
 		return 'NaoAchou'
 
-class Rest(smach.State):
+class Rest(smach.State):  #estado de rest(nao segue nem desvia de nada)
 	def __init__(self):
 		smach.State.__init__(self, outcomes=['AchouMadfox', 'AchouObjeto', 'AchouObstaculo','NaoAchou', 'Colidiu'])
 
@@ -255,17 +204,15 @@ class Rest(smach.State):
 		if colisao == True:
 			return 'Colidiu'
 		if achou_obstaculo == True:
-			print("achouobstaculo")
 			return 'AchouObstaculo'
 		elif madfox_tamanho > objeto_tamanho:
 			return 'AchouMadfox'
 		elif objeto_tamanho > madfox_tamanho:
 			return 'AchouObjeto'
 		else:
-			#Gira.gira(velocidade_saida)
 			return 'NaoAchou'
 
-class Sobrevive(smach.State):
+class Sobrevive(smach.State):  #estado para sobreviver(desviar de objetos)
 	def __init__(self):
 		smach.State.__init__(self, outcomes=['AchouMadfox', 'AchouObjeto','AchouObstaculo','NaoAchou', 'Colidiu'])
 
@@ -286,7 +233,7 @@ class Sobrevive(smach.State):
 			return 'NaoAchou'
 
 
-class Seguir(smach.State):
+class Seguir(smach.State): () #estado para seguir o objeto de cor especifica
 	def __init__(self):
 		smach.State.__init__(self, outcomes=['AchouMadfox', 'AchouObjeto','AchouObstaculo','NaoAchou', 'Colidiu'])
 
@@ -303,7 +250,7 @@ class Seguir(smach.State):
 		else:
 			return 'NaoAchou'
 
-class Fugir(smach.State):
+class Fugir(smach.State):  #estado para fugir do objeto de imagem especifica
 	def __init__(self):
 		smach.State.__init__(self, outcomes=['AchouMadfox', 'AchouObjeto','AchouObstaculo','NaoAchou', 'Colidiu'])
 
@@ -320,7 +267,7 @@ class Fugir(smach.State):
 		else:
 			return 'NaoAchou'
 
-class Colisao(smach.State):
+class Colisao(smach.State):  #funcao para reacao a colisao do robo
 	def __init__(self):
 		smach.State.__init__(self, outcomes=['AchouMadfox', 'AchouObjeto','AchouObstaculo','NaoAchou', 'Colidiu'])
 
@@ -352,28 +299,15 @@ def main():
 	global velocidade_saida
 	global buffer
 	rospy.init_node('cor_estados')
-
-	# Para usar a webcam 
-	#recebedor = rospy.Subscriber("/cv_camera/image_raw/compressed", CompressedImage, roda_todo_frame, queue_size=1, buff_size = 2**24)
 	recebe_scan = rospy.Subscriber("/scan", LaserScan, recebe_laser)
 	recebedor_imagem = rospy.Subscriber("/raspicam_node/image/compressed", CompressedImage, recebe_imagem, queue_size=10, buff_size = 2**24)
 	recebe_imu = rospy.Subscriber("/imu", Imu, leu_imu)
 	
 
 	velocidade_saida = rospy.Publisher("/cmd_vel", Twist, queue_size = 1)
-
-	# Create a SMACH state machine
 	sm = smach.StateMachine(outcomes=['terminei'])
 
-	# Open the container
 	with sm:
-		# Add states to the container
-		#smach.StateMachine.add('LONGE', Longe(), 
-		#                       transitions={'ainda_longe':'ANDANDO', 
-		#                                    'perto':'terminei'})
-		#smach.StateMachine.add('ANDANDO', Andando(), 
-		#                       transitions={'ainda_longe':'LONGE'})
-
 		smach.StateMachine.add('TIRANDOFOTO', Tirafoto(),
 								transitions={'NaoAchou': 'REST',})
 		
@@ -408,9 +342,7 @@ def main():
 								'AchouObstaculo': 'SOBREVIVE',
 								'Colidiu': 'COLISAO'})
 
-	# Execute SMACH plan
 	outcome = sm.execute()
-	#rospy.spin()
 
 if __name__ == '__main__':
 	print("Main")
